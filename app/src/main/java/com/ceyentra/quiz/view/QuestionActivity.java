@@ -1,8 +1,6 @@
 package com.ceyentra.quiz.view;
 
-import android.graphics.Color;
 import android.os.CountDownTimer;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +10,7 @@ import android.widget.TextView;
 
 import com.ceyentra.quiz.R;
 import com.ceyentra.quiz.data.Question;
+import com.ceyentra.quiz.data.UserData;
 import com.ceyentra.quiz.socket.SocketConnection;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
@@ -31,7 +30,7 @@ public class QuestionActivity extends AppCompatActivity{
     private boolean userAnswered=false;
     private int userGivenAnswer=-1;
     private Question question;
-
+    private int correctAnswer = -1;
 
 
     @Override
@@ -52,12 +51,17 @@ public class QuestionActivity extends AppCompatActivity{
             this.socket.connect();
         }
 
-        this.socket.on("Countdown_after",onCountDouwnAfter);
+        this.socket.on("Countdown_after",onCountDownAfter);
         this.socket.on("Question",onQuestionUpdate);
+        this.socket.on("Answer", onGivenAnswer);
+        this.socket.on("Result", onResult);
         this.socket.connect();
 
     }
 
+    /*
+     * Set a timer
+     */
     private void setTimer(){
         totalTimeCountInMilliseconds =  11 * 1000;
         mProgressBar1.setMax( 10 * 1000);
@@ -66,7 +70,7 @@ public class QuestionActivity extends AppCompatActivity{
     /*
      * Run Countdown
      */
-    private Emitter.Listener onCountDouwnAfter = new Emitter.Listener() {
+    private Emitter.Listener onCountDownAfter = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             QuestionActivity.this.runOnUiThread(new Runnable() {
@@ -75,11 +79,8 @@ public class QuestionActivity extends AppCompatActivity{
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     try {
-                        int seconds = Integer.parseInt(data.getString("remaing_sconds"));
+                        int seconds = Integer.parseInt(data.getString("remaining_seconds"));
 
-                        if (seconds <= 0){
-                            return;
-                        }
                         textViewShowTime.setText(String.format("%02d", seconds));
                         mProgressBar1.setProgress(seconds * 1000);
 
@@ -104,14 +105,17 @@ public class QuestionActivity extends AppCompatActivity{
                     JSONObject data = (JSONObject) args[0];
                     try {
                         String question = data.getString("question");
+                        int question_number = data.getInt("question_number");
                         JSONArray options = data.getJSONArray("options");
+
                         String [] answers = new String[4];
 
                         for (int i=0;i<4;i++){
-                            answers[i]=options.getString(0);
+                            answers[i]=options.getString(i);
                         }
 
-                        setQuestion(question,answers);
+                        resetQuestion();
+                        setQuestion(question_number,question,answers);
 
 
                     } catch (JSONException e) {
@@ -122,11 +126,132 @@ public class QuestionActivity extends AppCompatActivity{
         }
     };
 
+    private void resetQuestion(){
+        if (userGivenAnswer != -1) {
+            TextView selectedTextView = getSelectedTextView((userGivenAnswer + 1));
+            selectedTextView.setBackground(this.getResources().getDrawable(R.drawable.question_background));
+            TextView correctAnswer = getSelectedTextView(this.correctAnswer);
+            correctAnswer.setBackground(this.getResources().getDrawable(R.drawable.question_background));
+            this.userGivenAnswer = -1;
+            this.userAnswered = false;
+        }else{
+            TextView correctAnswer = getSelectedTextView(this.correctAnswer);
+            if (null == correctAnswer){
+                return;
+            }
+            correctAnswer.setBackground(this.getResources().getDrawable(R.drawable.question_background));
+        }
+    }
+
+
+    /*
+     * Trigger when server returns the answer
+     */
+    private Emitter.Listener onGivenAnswer = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            QuestionActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args [0];
+
+                    try {
+                        JSONArray state_of_competition = data.getJSONArray("state_of_competition");
+                        checkCorrectAnswer(state_of_competition);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
+    /*
+     *
+     */
+    private Emitter.Listener onResult = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            QuestionActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args [0];
+                    // TODO
+                }
+            });
+        }
+    };
+
+    /*
+     * Check Correct Answer
+     * correctness --->
+     *      0 => wrong
+     *      1 => correct
+     */
+    private void checkCorrectAnswer(JSONArray competitionState){
+
+        String username = null;
+        int correctness = -1;
+        int correctAnswer = -1;
+        for(int i=0; i< competitionState.length(); i++){
+            try {
+                JSONArray user = (JSONArray) competitionState.get(i);
+                JSONObject jsonObject = user.getJSONObject(0);
+                username = jsonObject.getString("username");
+
+                if (username.equals(UserData.getInstance().getUsername())){
+                    correctness = user.getInt(1);
+                    correctAnswer = user.getInt(2);
+                    this.correctAnswer = correctAnswer;
+                     break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String registered_username = UserData.getInstance().getUsername();
+
+        if (registered_username.equals(username)){
+            TextView answer = getSelectedTextView((userGivenAnswer+1));
+            if (correctness == 1){
+                if (null != answer){
+                    answer.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
+                }
+            }else{
+                if (null != answer){
+                    answer.setBackground(this.getResources().getDrawable(R.drawable.wrong_answer));
+                    TextView correctAnswerView = getSelectedTextView(correctAnswer);
+                    correctAnswerView.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
+                }else{
+                    TextView correctAnswerView = getSelectedTextView(correctAnswer);
+                    correctAnswerView.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
+                }
+            }
+        }
+
+    }
+
+    /*
+     * Return selected text view
+     */
+    private TextView getSelectedTextView(int correctAnswer){
+        switch (correctAnswer){
+            case 1 : return findViewById(R.id.answer1);
+            case 2 : return findViewById(R.id.answer2);
+            case 3 : return findViewById(R.id.answer3);
+            case 4 : return findViewById(R.id.answer4);
+            default: return null;
+        }
+    }
+
     /*
      * Set question
      */
-    private void setQuestion(String question, String [] answers){
+    private void setQuestion(int question_number, String question, String [] answers){
         this.question = new Question();
+        this.question.setQuestionNO(question_number);
         this.question.setQuestion(question);
         this.question.setAnswers(answers);
 
@@ -158,6 +283,23 @@ public class QuestionActivity extends AppCompatActivity{
         LinearLayout view_id = findViewById(view.getId());
         ((TextView)view_id.getChildAt(0)).setBackground(this.getResources().getDrawable(R.drawable.user_answer));
         userGivenAnswer = question.getAnswerIndex(((TextView) view_id.getChildAt(0)).getText().toString());
+
+        /*
+         * Set JSON to give answer
+         */
+        JSONObject jsonObject = new JSONObject();
+
+        // answer 1 2 3 4
+        try {
+            jsonObject.put("answer", (userGivenAnswer+1));
+            jsonObject.put("question_number", this.question.getQuestionNO());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        /*
+         * Emit json
+         */
+        socket.emit("Give_answer", jsonObject);
         userAnswered = true;
     }
 }

@@ -1,6 +1,7 @@
 package com.ceyentra.quiz.data;
 
 public class Question {
+    private int questionNO;
     private String question;
     private String[] answers;
 
@@ -18,6 +19,14 @@ public class Question {
 
     public void setAnswers(String[] answers) {
         this.answers = answers;
+    }
+
+    public int getQuestionNO() {
+        return questionNO;
+    }
+
+    public void setQuestionNO(int questionNO) {
+        this.questionNO = questionNO;
     }
 
     public int getAnswerIndex(String answer){

@@ -12,7 +12,7 @@ public class SocketConnection {
      */
 
     private static SocketConnection socketConnection;
-//    private final String SERVER_IP = "http://192.168.8.101:3000/";
+//    private final String SERVER_IP = "http://192.168.8.106:3000/";
     private final String SERVER_IP = "http://192.168.1.2:3000/";
     private Socket socket;
 

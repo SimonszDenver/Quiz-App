@@ -30,7 +30,6 @@
         android:layout_centerVertical="true"
         android:layout_marginBottom="237dp"
         android:gravity="center"
-        android:text="@string/count_down"
         android:textColor="@android:color/white"
         android:textSize="50sp"
         android:textStyle="bold"

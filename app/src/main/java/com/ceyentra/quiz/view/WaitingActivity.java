@@ -22,20 +22,14 @@ public class WaitingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_waiting);
 
         this.socket = SocketConnection.getInstance().getSocket();
-        if (!this.socket.connected()) {
-            this.socket.connect();
-        }
-        this.socket.on("Start",onStartActivity);
-        this.socket.connect();
+        this.socket.on("GetStart",onStartActivity);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        this.socket.off("Start",onStartActivity);
-        this.socket.disconnect();
+        this.socket.off("GetStart",onStartActivity);
     }
 
 
@@ -51,9 +45,8 @@ public class WaitingActivity extends AppCompatActivity {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     try {
-                        int state = Integer.parseInt(data.getString("state"));
-
-                        if (state == 0){
+                        int state = data.getInt("state");
+                        if (state == 1){
                             changeActivity();
                         }
 
@@ -68,6 +61,6 @@ public class WaitingActivity extends AppCompatActivity {
     private void changeActivity(){
         Intent intent = new Intent(this,StartingQuizActivity.class);
         startActivity(intent);
+        finish();
     }
-
 }

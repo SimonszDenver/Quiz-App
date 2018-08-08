@@ -25,13 +25,15 @@ public class StartingQuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_starting_quiz);
 
         this.socket = SocketConnection.getInstance().getSocket();
-        if (!this.socket.connected()) {
-            this.socket.connect();
-        }
         this.socket.on("Countdown_before",onCountDown);
-        this.socket.connect();
         textViewShowTime = (TextView)
                 findViewById(R.id.textView_timerview_time);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.socket.off("Countdown_before");
     }
 
     private Emitter.Listener onCountDown = new Emitter.Listener() {
@@ -43,7 +45,7 @@ public class StartingQuizActivity extends AppCompatActivity {
                 public void run() {
                     JSONObject data = (JSONObject) args[0];
                     try {
-                        int seconds = Integer.parseInt(data.getString("remaing_sconds"));
+                        int seconds = Integer.parseInt(data.getString("remaining_seconds"));
 
                         if (seconds <= 0){
                             changeActivity();
@@ -58,28 +60,9 @@ public class StartingQuizActivity extends AppCompatActivity {
         }
     };
 
-
-/*    private void setTimer(){
-        totalTimeCountInMilliseconds =  6 * 1000;
-    }
-
-    private void startTimer() {
-        countDownTimer = new CountDownTimer(totalTimeCountInMilliseconds, 1) {
-            @Override
-            public void onTick(long leftTimeInMilliseconds) {
-                long seconds = leftTimeInMilliseconds / 1000;
-                textViewShowTime.setText(String.format("%01d", seconds % 60));
-            }
-            @Override
-            public void onFinish() {
-                changeActivity();
-            }
-        }.start();
-    }*/
-
     private void changeActivity(){
-        this.socket.off("Countdown_before");
         Intent intent = new Intent(this,QuestionActivity.class);
         startActivity(intent);
+        finish();
     }
 }
