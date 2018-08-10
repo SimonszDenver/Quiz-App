@@ -38,6 +38,7 @@ public class JoinQuizActivity extends AppCompatActivity {
          */
         this.socket = SocketConnection.getInstance().getSocket();
         this.socket.on("State",onChangeState);
+
         socket.connect();
     }
 
@@ -47,7 +48,6 @@ public class JoinQuizActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        this.socket.disconnect();
         this.socket.off("State");
     }
 
@@ -80,7 +80,10 @@ public class JoinQuizActivity extends AppCompatActivity {
          */
         socket.emit("Join", jsonObject);
 
+        System.out.println(this.socket.connected());
+
         if (this.socket.connected()) {
+
             if (state == 0) {
                 Intent intent = new Intent(this, WaitingActivity.class);
                 startActivity(intent);

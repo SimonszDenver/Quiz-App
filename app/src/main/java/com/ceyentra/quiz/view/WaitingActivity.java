@@ -48,6 +48,8 @@ public class WaitingActivity extends AppCompatActivity {
                         int state = data.getInt("state");
                         if (state == 1){
                             changeActivity();
+                        }else{
+                            resetActivity();
                         }
 
                     } catch (JSONException e) {
@@ -60,6 +62,12 @@ public class WaitingActivity extends AppCompatActivity {
 
     private void changeActivity(){
         Intent intent = new Intent(this,StartingQuizActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void resetActivity(){
+        Intent intent = new Intent(this,JoinQuizActivity.class);
         startActivity(intent);
         finish();
     }

@@ -1,5 +1,6 @@
 package com.ceyentra.quiz.view;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,6 +58,16 @@ public class QuestionActivity extends AppCompatActivity{
         this.socket.on("Result", onResult);
         this.socket.connect();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        this.socket.off("Countdown_after");
+        this.socket.off("Question");
+        this.socket.off("Answer");
+        this.socket.off("Result");
     }
 
     /*
@@ -177,11 +188,43 @@ public class QuestionActivity extends AppCompatActivity{
                 @Override
                 public void run() {
                     JSONObject data = (JSONObject) args [0];
-                    // TODO
+
+                    try {
+                        JSONArray points = data.getJSONArray("points_of_competition");
+                        setResult(points);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
     };
+
+    private void setResult(JSONArray points) throws JSONException {
+        JSONObject user = null;
+        int marks = 0;
+        int rank = 0;
+        for (int i=0;i < points.length(); i++){
+            JSONArray usermarks = (JSONArray) points.get(i);
+            user = (JSONObject) usermarks.get(0);
+            if (user.getString("username").equals(UserData.getInstance().getUsername())){
+                marks = usermarks.getInt(1);
+                rank = usermarks.getInt(2);
+                break;
+            }
+        }
+
+        if (user == null){
+            return;
+        }
+
+        Intent intent = new Intent(this,ResultActivity.class);
+        intent.putExtra("user",user.getString("username"));
+        intent.putExtra("marks",marks);
+        intent.putExtra("rank",rank);
+        startActivity(intent);
+        finish();
+    }
 
     /*
      * Check Correct Answer

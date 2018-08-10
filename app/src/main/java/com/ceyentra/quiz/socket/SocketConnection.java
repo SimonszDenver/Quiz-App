@@ -13,7 +13,10 @@ public class SocketConnection {
 
     private static SocketConnection socketConnection;
 //    private final String SERVER_IP = "http://192.168.8.106:3000/";
-    private final String SERVER_IP = "http://192.168.1.2:3000/";
+//    private final String SERVER_IP = "http://192.168.1.2:3000/";
+//    private final String SERVER_IP = "http://192.168.8.101:3000/";
+//    private final String SERVER_IP = "http://192.168.8.108:9029/";
+    private final String SERVER_IP = "http://sv2.ideamarthosting.dialog.lk:9029/";
     private Socket socket;
 
     private SocketConnection(){
