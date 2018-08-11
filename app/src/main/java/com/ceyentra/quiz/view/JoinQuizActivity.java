@@ -23,7 +23,8 @@ import java.util.Date;
 public class JoinQuizActivity extends AppCompatActivity {
 
     private Socket socket;
-    private static int state;
+    public static int state;
+    public static int time;
 
     /*
      * On Activity Create
@@ -38,6 +39,8 @@ public class JoinQuizActivity extends AppCompatActivity {
          */
         this.socket = SocketConnection.getInstance().getSocket();
         this.socket.on("State",onChangeState);
+        this.socket.on("GetStart",onStartActivity);
+        this.socket.on("SendReset",onResetActivity);
 
         socket.connect();
     }
@@ -49,6 +52,30 @@ public class JoinQuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         this.socket.off("State");
+    }
+
+
+    private Emitter.Listener onStartActivity = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            JoinQuizActivity.this.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    JSONObject jsonObject = (JSONObject) args[0];
+                    try {
+                        JoinQuizActivity.time = jsonObject.getInt("time");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    setStateOnStart();
+                }
+            });
+        }
+    };
+
+    private void setStateOnStart(){
+        JoinQuizActivity.state = 1;
     }
 
     /*
@@ -111,7 +138,6 @@ public class JoinQuizActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    /* TODO */
                 }
             });
         }
@@ -119,5 +145,28 @@ public class JoinQuizActivity extends AppCompatActivity {
 
     private void setState(int state){
         this.state = state;
+    }
+
+    /*
+     * Reset Activity
+     */
+    private Emitter.Listener onResetActivity = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            JoinQuizActivity.this.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    resetActivity();
+                }
+            });
+        }
+    };
+
+    private void resetActivity(){
+        this.socket.off("GetStart");
+        JoinQuizActivity.state=0;
+        Intent intent = new Intent(this,JoinQuizActivity.class);
+        startActivity(intent);
     }
 }

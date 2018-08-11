@@ -20,9 +20,7 @@ public class WaitingOnQuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting_on_quiz);
-
         this.socket = SocketConnection.getInstance().getSocket();
-        this.socket.on("State",onResetActivity);
 
     }
 
@@ -30,9 +28,7 @@ public class WaitingOnQuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        this.socket.off("State");
     }
-
 
     private Emitter.Listener onResetActivity = new Emitter.Listener() {
         @Override
@@ -47,6 +43,7 @@ public class WaitingOnQuizActivity extends AppCompatActivity {
                         if (state == 0){
                             changeActivity();
                         }
+                        JoinQuizActivity.state = 0;
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -59,6 +56,7 @@ public class WaitingOnQuizActivity extends AppCompatActivity {
     private void changeActivity(){
         Intent intent = new Intent(this,JoinQuizActivity.class);
         startActivity(intent);
+        JoinQuizActivity.state = 0;
         finish();
     }
 }

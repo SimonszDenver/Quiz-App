@@ -20,6 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class QuestionActivity extends AppCompatActivity{
 
     ProgressBar mProgressBar, mProgressBar1;
@@ -32,6 +34,7 @@ public class QuestionActivity extends AppCompatActivity{
     private int userGivenAnswer=-1;
     private Question question;
     private int correctAnswer = -1;
+    private String [] answersArray;
 
 
     @Override
@@ -63,7 +66,7 @@ public class QuestionActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        JoinQuizActivity.state = 0;
         this.socket.off("Countdown_after");
         this.socket.off("Question");
         this.socket.off("Answer");
@@ -75,7 +78,7 @@ public class QuestionActivity extends AppCompatActivity{
      */
     private void setTimer(){
         totalTimeCountInMilliseconds =  11 * 1000;
-        mProgressBar1.setMax( 10 * 1000);
+        mProgressBar1.setMax( JoinQuizActivity.time * 1000);
     }
 
     /*
@@ -139,14 +142,17 @@ public class QuestionActivity extends AppCompatActivity{
 
     private void resetQuestion(){
         if (userGivenAnswer != -1) {
-            TextView selectedTextView = getSelectedTextView((userGivenAnswer + 1));
+            TextView selectedTextView = getSelectedTextView((userGivenAnswer));
             selectedTextView.setBackground(this.getResources().getDrawable(R.drawable.question_background));
-            TextView correctAnswer = getSelectedTextView(this.correctAnswer);
+            TextView correctAnswer = getSelectedTextView(getUserAnswer(question.getCorrectAnswer(this.correctAnswer)));
             correctAnswer.setBackground(this.getResources().getDrawable(R.drawable.question_background));
             this.userGivenAnswer = -1;
             this.userAnswered = false;
         }else{
-            TextView correctAnswer = getSelectedTextView(this.correctAnswer);
+            if (answersArray == null){
+                return;
+            }
+            TextView correctAnswer = getSelectedTextView(getUserAnswer(question.getCorrectAnswer(this.correctAnswer)));
             if (null == correctAnswer){
                 return;
             }
@@ -257,7 +263,7 @@ public class QuestionActivity extends AppCompatActivity{
         String registered_username = UserData.getInstance().getUsername();
 
         if (registered_username.equals(username)){
-            TextView answer = getSelectedTextView((userGivenAnswer+1));
+            TextView answer = getSelectedTextView((userGivenAnswer));
             if (correctness == 1){
                 if (null != answer){
                     answer.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
@@ -265,10 +271,10 @@ public class QuestionActivity extends AppCompatActivity{
             }else{
                 if (null != answer){
                     answer.setBackground(this.getResources().getDrawable(R.drawable.wrong_answer));
-                    TextView correctAnswerView = getSelectedTextView(correctAnswer);
+                    TextView correctAnswerView = getSelectedTextView(getUserAnswer(question.getCorrectAnswer(correctAnswer)));
                     correctAnswerView.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
                 }else{
-                    TextView correctAnswerView = getSelectedTextView(correctAnswer);
+                    TextView correctAnswerView = getSelectedTextView(getUserAnswer(question.getCorrectAnswer(correctAnswer)));
                     correctAnswerView.setBackground(this.getResources().getDrawable(R.drawable.correct_answer));
                 }
             }
@@ -298,17 +304,31 @@ public class QuestionActivity extends AppCompatActivity{
         this.question.setQuestion(question);
         this.question.setAnswers(answers);
 
+        this.answersArray = new String[]{answers[0],answers[1],answers[2],answers[3]};
+
+        int randomNumber = new Random().nextInt(100)/4 + 1;
+        System.out.println(randomNumber);
+
+        for(int i=0;i<randomNumber;i++){
+            String value = answersArray[0];
+            answersArray[0] = answersArray[3];
+            answersArray[3] = answersArray[2];
+            answersArray[2] = answersArray[1];
+            answersArray[1] = value;
+            System.out.println(answersArray[0]);
+        }
+
         TextView answer1 = findViewById(R.id.answer1);
-        answer1.setText(answers[0]);
+        answer1.setText(answersArray[0]);
 
         TextView answer2 = findViewById(R.id.answer2);
-        answer2.setText(answers[1]);
+        answer2.setText(answersArray[1]);
 
         TextView answer3 = findViewById(R.id.answer3);
-        answer3.setText(answers[2]);
+        answer3.setText(answersArray[2]);
 
         TextView answer4 = findViewById(R.id.answer4);
-        answer4.setText(answers[3]);
+        answer4.setText(answersArray[3]);
 
         TextView ques = findViewById(R.id.question);
         ques.setText(question);
@@ -319,7 +339,7 @@ public class QuestionActivity extends AppCompatActivity{
     /*
      * This method recognise the answer that user have been given
      */
-    public void onClickAnswer(View view){
+/*    public void onClickAnswer(View view){
         if(userAnswered){
             return;
         }
@@ -327,9 +347,9 @@ public class QuestionActivity extends AppCompatActivity{
         ((TextView)view_id.getChildAt(0)).setBackground(this.getResources().getDrawable(R.drawable.user_answer));
         userGivenAnswer = question.getAnswerIndex(((TextView) view_id.getChildAt(0)).getText().toString());
 
-        /*
+        *//*
          * Set JSON to give answer
-         */
+         *//*
         JSONObject jsonObject = new JSONObject();
 
         // answer 1 2 3 4
@@ -339,10 +359,47 @@ public class QuestionActivity extends AppCompatActivity{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        *//*
+         * Emit json
+         *//*
+        socket.emit("Give_answer", jsonObject);
+        userAnswered = true;
+    }*/
+
+    public void onClickAnswer(View view){
+        if(userAnswered){
+            return;
+        }
+        TextView clickedView = findViewById(view.getId());
+        clickedView.setBackground(this.getResources().getDrawable(R.drawable.user_answer));
+        userGivenAnswer = getUserAnswer(clickedView.getText().toString());
+
+        /*
+         * Set JSON to give answer
+         */
+        JSONObject jsonObject = new JSONObject();
+
+        // answer 1 2 3 4
+        try {
+            jsonObject.put("answer", question.getAnswerIndex(clickedView.getText().toString()));
+            jsonObject.put("question_number", this.question.getQuestionNO());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         /*
          * Emit json
          */
         socket.emit("Give_answer", jsonObject);
         userAnswered = true;
+    }
+
+
+    public int getUserAnswer(String answer){
+        for (int i=0;i<answersArray.length;i++){
+            if (answer.equals(answersArray[i])){
+                return i+1;
+            }
+        }
+        return -1;
     }
 }

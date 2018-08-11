@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ceyentra.quiz.R;
@@ -22,13 +23,31 @@ public class ResultActivity extends AppCompatActivity {
         setValues(user,marks,rank);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        JoinQuizActivity.state = 0;
+    }
+
     private void setValues(String user, int marks, int rank){
         TextView name = findViewById(R.id.name);
         TextView markView = findViewById(R.id.marks);
-        TextView rankView = findViewById(R.id.rank);
+        ImageView rankView = findViewById(R.id.cup);
 
         name.setText(user);
         markView.setText(""+marks);
-        rankView.setText(""+rank);
+
+        switch (rank){
+            case 1: rankView.setImageResource(R.drawable.first_place); break;
+            case 2: rankView.setImageResource(R.drawable.second_place); break;
+            case 3: rankView.setImageResource(R.drawable.third_place); break;
+            case 4: rankView.setImageResource(R.drawable.fourth_place); break;
+            case 5: rankView.setImageResource(R.drawable.fifth_place); break;
+            default: rankView.setImageResource(R.drawable.any_place);
+        }
+
+
+//        rankView.setText(""+rank);
     }
+
 }

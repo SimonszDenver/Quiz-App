@@ -37,4 +37,8 @@ public class Question {
         }
         return -1;
     }
+
+    public String getCorrectAnswer(int i){
+        return this.answers[i-1];
+    }
 }

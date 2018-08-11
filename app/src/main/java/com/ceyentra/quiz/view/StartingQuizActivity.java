@@ -33,6 +33,7 @@ public class StartingQuizActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        JoinQuizActivity.state = 0;
         this.socket.off("Countdown_before");
     }
 

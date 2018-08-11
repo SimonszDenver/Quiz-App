@@ -1,84 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/gradient_background"
     tools:context=".view.QuestionActivity"
     tools:layout_editor_absoluteY="25dp">
 
-    <ProgressBar
-        android:id="@+id/progressbar_timerview"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="246dp"
-        android:layout_height="128dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="20dp"
-        android:indeterminate="false"
-        android:progressDrawable="@drawable/circleshape2_timeview"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.269" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView_timerview_time"
-        android:layout_width="65dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="@string/_00"
-        android:textColor="@android:color/white"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/progressbar_timerview"
-        app:layout_constraintEnd_toEndOf="@+id/progressbar_timerview"
-        app:layout_constraintStart_toStartOf="@+id/progressbar_timerview"
-        app:layout_constraintTop_toBottomOf="@+id/progressbar1_timerview" />
+        <ProgressBar
+            android:id="@+id/progressbar_timerview"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="246dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="20dp"
+            android:progressDrawable="@drawable/circleshape2_timeview" />
 
-    <ProgressBar
-        android:id="@+id/progressbar1_timerview"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="186dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="21dp"
-        android:indeterminate="false"
-        android:progressDrawable="@drawable/circleshap1_timeview"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/progressbar_timerview"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.47000003" />
+        <TextView
+            android:id="@+id/textView_timerview_time"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:text="@string/_00"
+            android:textColor="@android:color/white"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+        <ProgressBar
+            android:id="@+id/progressbar1_timerview"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="186dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="20dp"
+            android:progressDrawable="@drawable/circleshap1_timeview"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
 
     <FrameLayout
         android:id="@+id/frameLayout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="180dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
         android:layout_marginEnd="29dp"
+        android:layout_weight="1"
         android:layout_marginStart="29dp"
-        android:background="@drawable/question_background"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent">
+        android:background="@drawable/question_background">
 
 
         <TextView
@@ -87,7 +72,7 @@
             android:text="Question"
             android:textAlignment="center"
             android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/question"
@@ -97,41 +82,24 @@
             android:layout_marginLeft="18dp"
             android:layout_marginRight="18dp"
             android:textAlignment="center"
-            android:textSize="16sp" />
+            android:textSize="20sp" />
 
 
     </FrameLayout>
 
     <LinearLayout
         android:id="@+id/constraintLayout3"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="200dp"
         android:layout_marginBottom="33dp"
         android:layout_marginEnd="29dp"
         android:layout_marginStart="29dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:onClick="onClickAnswer"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.045"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
 
             <TextView
@@ -139,95 +107,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
+                android:onClick="onClickAnswer"
                 android:background="@drawable/question_background"
                 android:gravity="center" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/constraintLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:gravity="center"
-            android:onClick="onClickAnswer"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.045"
-            app:layout_constraintStart_toStartOf="parent">
+
 
             <TextView
                 android:id="@+id/answer2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:onClick="onClickAnswer"
                 android:layout_weight="1"
                 android:background="@drawable/question_background"
                 android:gravity="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="12dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:gravity="center"
-            android:onClick="onClickAnswer"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.24"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
 
             <TextView
                 android:id="@+id/answer3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
+                android:onClick="onClickAnswer"
                 android:background="@drawable/question_background"
                 android:gravity="center" />
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/constraintLayout4"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:gravity="center"
-            android:onClick="onClickAnswer"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-            app:layout_constraintVertical_bias="1.0">
 
             <TextView
                 android:id="@+id/answer4"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
                 android:layout_weight="1"
+                android:onClick="onClickAnswer"
                 android:background="@drawable/question_background"
                 android:gravity="center" />
-
-        </LinearLayout>
-
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
